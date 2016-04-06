@@ -14,14 +14,18 @@ import time
 if __name__=="__main__":
     print "Main start"
 
-    mon = monitor.vivint.Monitor(period=10.0)
+    mon = monitor.vivint.Monitor(period=5.0)
 
     mon.run()
-    time.sleep(30)
-    print "stopping..."
-    mon.stop()
-    print "waiting..."
-    mon.join()
 
-    print "Main exit"
-    
+    try:
+        time.sleep(17)
+        print "stopping..."
+        mon.stop()
+        print "waiting..."
+        mon.join()
+        
+        print "Main exit"
+    except KeyboardInterrupt:
+        mon.stop()
+        mon.join()
