@@ -7,6 +7,7 @@
 # trends, etc.
 #
 
+import db
 import monitor.vivint
 import ui
 import time
@@ -14,7 +15,9 @@ import time
 if __name__=="__main__":
     print "Main start"
 
-    mon = monitor.vivint.Monitor(period=5.0)
+
+    my_db = db.solar_db()
+    mon = monitor.vivint.Monitor(my_db, period=5.0)
 
     mon.run()
 

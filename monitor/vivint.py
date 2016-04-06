@@ -13,11 +13,12 @@ import threading
 
 class Monitor(object):
 
-    def __init__(self, period=60.0):
+    def __init__(self, database, period=60.0):
         self.looper_thread = None
         self.keep_running = True
         self.period = float(period)
         self.event = threading.Event()
+        self.db = database
 
     def join(self):
         if self.looper_thread:
@@ -50,5 +51,5 @@ class Monitor(object):
         self.looper_thread.start()
 
     def fetch_reading(self):
-        logging.warn("Hello @ %s", time.time())
+        self.db.record_production(time.time(), "Hello there!")
         
