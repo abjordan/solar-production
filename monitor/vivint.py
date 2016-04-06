@@ -10,6 +10,22 @@ import logging
 import json
 import threading
 
+units = {
+    "W": 1,
+    "kW": 1000,
+    "MW": 1000000,
+    "Wh": 1,
+    "kWh": 1000,
+    "MWh": 1000000
+}
+
+def str_to_watts(s):
+    tok = s.strip().split(" ")
+    number = float(tok[0])
+    unit = tok[1]
+    watts = number * units[unit]
+    return watts
+
 
 class Monitor(object):
 
@@ -33,15 +49,14 @@ class Monitor(object):
     def read_loop(self):
         start = time.time()
 
-        logging.warn("read loop starting")
+        logging.warn("monitor loop starting")
         while self.keep_running:
             self.fetch_reading()
             sleep_time = self.period - (time.time() - start)
             if self.event.wait(sleep_time):
-                logging.warn("Event is set")
                 break
             start = time.time()
-        logging.warn("read loop exiting")
+        logging.warn("monitor loop exiting")
 
     def run(self):
         print "Starting up..."
@@ -50,6 +65,22 @@ class Monitor(object):
         self.looper_thread.daemon = True
         self.looper_thread.start()
 
+
     def fetch_reading(self):
-        self.db.record_production(time.time(), "Hello there!")
+        response = urllib2.urlopen("http://192.168.1.3/production?locale=en")
+        page = response.read()
+
+        soup = bs4.BeautifulSoup(page, "html.parser", from_encoding='utf-8')
+
+        current = soup.find('td', text="Currently").find_next('td').string
+        today = soup.find('td', text="Today").find_next('td').string
+        week = soup.find('td', text="Past Week").find_next('td').string
+        install = soup.find('td', text="Since Installation").find_next('td').string
+
+        data_point = { "current": str_to_watts(current),
+                       "today": str_to_watts(today),
+                       "week": str_to_watts(week),
+                       "install": str_to_watts(install) }
+
+        self.db.record_production(time.time(), data_point)
         
