@@ -8,6 +8,7 @@ import time
 import datetime
 import logging
 import json
+import schedule
 import threading
 
 units = {
@@ -35,6 +36,7 @@ class Monitor(object):
         self.period = float(period)
         self.event = threading.Event()
         self.db = database
+        self.scheduler = schedule.Scheduler()
 
     def join(self):
         if self.looper_thread:
@@ -49,13 +51,13 @@ class Monitor(object):
     def read_loop(self):
         start = time.time()
 
+        self.scheduler.every().day.at("23:00").do(self.fetch_eod_reading)
+        self.scheduler.every(15).seconds.do(self.fetch_reading)
+
         logging.warn("monitor loop starting")
         while self.keep_running:
-            self.fetch_reading()
-            sleep_time = self.period - (time.time() - start)
-            if self.event.wait(sleep_time):
-                break
-            start = time.time()
+            self.scheduler.run_pending()
+            time.sleep(1)
         logging.warn("monitor loop exiting")
 
     def run(self):
@@ -65,9 +67,9 @@ class Monitor(object):
         self.looper_thread.daemon = True
         self.looper_thread.start()
 
-
-    def fetch_reading(self):
-        response = urllib2.urlopen("http://192.168.1.3/production?locale=en")
+    def pull_reading(self):
+        #response = urllib2.urlopen("http://192.168.1.3/production?locale=en")
+        response = urllib2.urlopen("http://127.0.0.1:8000/sample.html")
         page = response.read()
 
         soup = bs4.BeautifulSoup(page, "html.parser", from_encoding='utf-8')
@@ -81,6 +83,20 @@ class Monitor(object):
                        "today": str_to_watts(today),
                        "week": str_to_watts(week),
                        "install": str_to_watts(install) }
+        return data_point
 
-        self.db.record_production(time.time(), data_point)
-        
+    def fetch_eod_reading(self):
+        '''Fetches the end of day reading'''
+        try:
+            data_point = self.pull_reading()
+            self.db.record_eod(time.time(), data_point)        
+        except Exception as e:
+            logging.exception("EXCEPTION when getting end-of-day reading!")
+
+    def fetch_reading(self):
+        '''Fetches the intra-day reading'''
+        try:
+            data_point = self.pull_reading()
+            self.db.record_production(time.time(), data_point)
+        except Exception as e:
+            logging.exception("EXCEPTION when getting regular reading!")

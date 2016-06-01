@@ -22,7 +22,7 @@ if __name__=="__main__":
     mon.run()
 
     try:
-        time.sleep(17)
+        time.sleep(240)
         print "stopping..."
         mon.stop()
         print "waiting..."
