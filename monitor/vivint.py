@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import bs4
-import MySQLdb
 import urllib2
 
 import time
@@ -30,9 +29,10 @@ def str_to_watts(s):
 
 class Monitor(object):
 
-    def __init__(self, database, period=60.0):
+    def __init__(self, config, database, period=60.0):
         self.looper_thread = None
         self.keep_running = True
+        self.config = config
         self.period = float(period)
         self.event = threading.Event()
         self.db = database
@@ -68,8 +68,7 @@ class Monitor(object):
         self.looper_thread.start()
 
     def pull_reading(self):
-        #response = urllib2.urlopen("http://192.168.1.3/production?locale=en")
-        response = urllib2.urlopen("http://127.0.0.1:8000/sample.html")
+        response = urllib2.urlopen(self.config["monitor"]["address"])
         page = response.read()
 
         soup = bs4.BeautifulSoup(page, "html.parser", from_encoding='utf-8')

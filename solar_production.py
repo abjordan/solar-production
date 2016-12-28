@@ -12,12 +12,15 @@ import monitor.vivint
 import ui
 import time
 
+from config import config
+
 if __name__=="__main__":
     print "Main start"
 
+    
 
     my_db = db.solar_db()
-    mon = monitor.vivint.Monitor(my_db, period=5.0)
+    mon = monitor.vivint.Monitor(config, my_db, period=5.0)
 
     mon.run()
 

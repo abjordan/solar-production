@@ -8,8 +8,8 @@ import logging
 
 class solar_db(object):
 
-    def __init__(self):
-        pass
+    def __init__(self, config):
+        self.config = config
 
     def record_eod(self, timestamp, reading):
         logging.warn("Got EOD reading: '%s: %s'", timestamp, reading)
