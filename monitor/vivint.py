@@ -44,7 +44,7 @@ class Monitor(object):
                 self.looper_thread.join()
 
     def stop(self):
-        logging.warn("GOT STOP")
+        logging.info("VivintMonitor got stop signal")
         self.keep_running = False
         self.event.set()
 
@@ -54,14 +54,14 @@ class Monitor(object):
         self.scheduler.every().day.at("23:00").do(self.fetch_eod_reading)
         self.scheduler.every(15).seconds.do(self.fetch_reading)
 
-        logging.warn("monitor loop starting")
+        logging.info("Monitor loop starting")
         while self.keep_running:
             self.scheduler.run_pending()
             time.sleep(1)
-        logging.warn("monitor loop exiting")
+        logging.info("Monitor loop exiting")
 
     def run(self):
-        print "Starting up..."
+        logging.info("Starting Vivint monitoring module")
 
         self.looper_thread = threading.Thread(target=self.read_loop)
         self.looper_thread.daemon = True

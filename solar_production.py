@@ -8,6 +8,7 @@
 #
 
 import db
+import logging
 import monitor.vivint
 import ui
 import time
@@ -15,23 +16,23 @@ import time
 from config import config
 
 if __name__=="__main__":
-    print "Main start"
 
-    
+    logging.basicConfig(format='%(asctime)s %(levelname)-8s %(message)s', level=config['logging']['level'])
+    logging.info("Main start")   
 
-    my_db = db.solar_db()
+    my_db = db.solar_db(config)
     mon = monitor.vivint.Monitor(config, my_db, period=5.0)
 
     mon.run()
 
+    # This will run for 240 seconds then automatically stop
     try:
         time.sleep(240)
-        print "stopping..."
+        logging.info("stopping...")
         mon.stop()
-        print "waiting..."
+        logging.info("waiting...")
         mon.join()
-        
-        print "Main exit"
+        logging.info("Main exit")
     except KeyboardInterrupt:
         mon.stop()
         mon.join()

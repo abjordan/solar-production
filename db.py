@@ -12,11 +12,11 @@ class solar_db(object):
         self.config = config
 
     def record_eod(self, timestamp, reading):
-        logging.warn("Got EOD reading: '%s: %s'", timestamp, reading)
+        logging.info("Got EOD reading: '%s: %s'", timestamp, reading)
         pass
 
     def record_production(self, timestamp, reading):
-        logging.warn("Got reading: '%s: %s'", timestamp, reading)
+        logging.info("Got reading: '%s: %s'", timestamp, reading)
 
         # Data is a dictionary with the keys:
         #   current

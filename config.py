@@ -1,7 +1,13 @@
 #!/usr/bin/env python
 
+import logging
+
 config = {
 
+    "logging": {
+        "level": logging.DEBUG
+    },
+    
     "database": {
         "sqlite": {
             "filename": "solar.sqlite3"
