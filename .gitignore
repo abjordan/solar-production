@@ -66,3 +66,6 @@ target/
 
 # VirtualEnv Stuff
 venv/
+
+# SQLite databases
+*.sqlite3
