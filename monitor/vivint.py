@@ -88,7 +88,7 @@ class Monitor(object):
         '''Fetches the end of day reading'''
         try:
             data_point = self.pull_reading()
-            self.db.record_eod(time.time(), data_point)        
+            self.db.record_eod(datetime.datetime.now(), data_point)        
         except Exception as e:
             logging.exception("EXCEPTION when getting end-of-day reading!")
 
@@ -96,6 +96,6 @@ class Monitor(object):
         '''Fetches the intra-day reading'''
         try:
             data_point = self.pull_reading()
-            self.db.record_production(time.time(), data_point)
+            self.db.record_production(datetime.datetime.now(), data_point)
         except Exception as e:
             logging.exception("EXCEPTION when getting regular reading!")

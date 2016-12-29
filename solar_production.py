@@ -25,9 +25,8 @@ if __name__=="__main__":
 
     mon.run()
 
-    # This will run for 240 seconds then automatically stop
     try:
-        time.sleep(240)
+        time.sleep(24000)
         logging.info("stopping...")
         mon.stop()
         logging.info("waiting...")
